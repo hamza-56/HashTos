@@ -1,0 +1,214 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             MYCODE, CODE
+    2 00000000         
+    3 00000000                 IMPORT           mpsp
+    4 00000000                 IMPORT           os_curr_task
+    5 00000000                 IMPORT           os_next_task
+    6 00000000                 IMPORT           handler
+    7 00000000                 IMPORT           params
+    8 00000000                 IMPORT           xPSR
+    9 00000000                 IMPORT           thread_return
+   10 00000000         
+   11 00000000                 ALIGN
+   12 00000000         _save_state
+                               FUNCTION
+   13 00000000                 EXPORT           _save_state
+   14 00000000 B672            cpsid            i           ;interrupts off
+   15 00000002         
+   16 00000002 F3EF 8109       MRS              r1, psp     ;get current value 
+                                                            of PSP 
+   17 00000006 E921 0FF0       STMDB            r1!, {r4-r11} ;save registers r
+                                                            4 - r11 
+   18 0000000A F381 8809       MSR              psp,r1      ;write the new sp t
+                                                            o PSP 
+   19 0000000E 480E            LDR              r0, =os_curr_task 
+                                                            ;get current task 
+   20 00000010 6802            LDR              r2,[r0]     ;load address of sp
+                                                             from task structur
+                                                            e
+   21 00000012 6011            STR              r1,[r2]     ;write new value of
+                                                             sp to address 
+   22 00000014         
+   23 00000014 B662            cpsie            i           ; interrupts on
+   24 00000016 4770            bx               lr
+   25 00000018                 ENDP
+   26 00000018         
+   27 00000018                 ALIGN
+   28 00000018         _load_state
+                               FUNCTION
+   29 00000018                 EXPORT           _load_state
+   30 00000018 B672            cpsid            i           ;interrupts off
+   31 0000001A         
+   32 0000001A 480C            LDR              r0, =os_next_task 
+                                                            ;get next task
+   33 0000001C 6802            LDR              r2, [r0]    ;load address of sp
+                                                             from task structur
+                                                            e
+   34 0000001E 6811            LDR              r1, [r2]    ;load sp from the a
+                                                            ddress
+   35 00000020 E8B1 0FF0       LDMFD            r1!, {r4-r11} ;load registers r
+                                                            4-r11
+   36 00000024 F381 8809       MSR              psp, r1     ;load the new sp in
+                                                            to PSP 
+   37 00000028         
+   38 00000028 B662            cpsie            i           ; interrupts on
+   39 0000002A 4770            bx               lr          ; return to thread 
+                                                            mode
+   40 0000002C                 ENDP
+   41 0000002C         
+   42 0000002C                 ALIGN
+   43 0000002C         _load_initial_state
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                               FUNCTION
+   44 0000002C                 EXPORT           _load_initial_state
+   45 0000002C B672            cpsid            i           ;interrupts off
+   46 0000002E         
+   47 0000002E 4A06            LDR              r2, =os_curr_task 
+                                                            ;get current task
+   48 00000030 6810            LDR              r0,[r2]     ;load address of sp
+                                                             from task structur
+                                                            e
+   49 00000032 6802            LDR              r2,[r0]     ;load the value of 
+                                                            sp
+   50 00000034 6BD0            LDR              r0 , [r2,#60] ;XPSR: Default va
+                                                            lue (0x01000000)
+   51 00000036 F380 8803       MSR              xpsr, r0    ;set the value of x
+                                                            PSR
+   52 0000003A 6B91            LDR              r1 , [r2,#56] ;PC: Point to the
+                                                             handler function
+   53 0000003C F8D2 E034       LDR              lr , [r2,#52] ;LR: Point to a f
+                                                            unction for thread 
+                                                            return
+   54 00000040 6A10            LDR              r0 , [r2,#32] ;R0: Point to the
+                                                             function parameter
+                                                            s
+   55 00000042 B662            cpsie            i           ;interrupts on
+   56 00000044 4708            bx               r1          ;jump to handler
+   57 00000046                 ENDP
+   58 00000046         
+   59 00000046         
+   60 00000046         
+   61 00000046         
+   62 00000046                 END
+              00 00 00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
+ork --depend=rcc\asm.d -orcc\asm.o -ID:\RCCv2\RCC\RCC\MDK-ARM\RTE -IC:\Keil_v5\
+ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP
+\2.2.0\Device\Include --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VE
+RSION SETA 521" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --
+list=..\asm.lst ..\Src\asm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+MYCODE 00000000
+
+Symbol: MYCODE
+   Definitions
+      At line 1 in file ..\Src\asm.s
+   Uses
+      None
+Comment: MYCODE unused
+_load_initial_state 0000002C
+
+Symbol: _load_initial_state
+   Definitions
+      At line 43 in file ..\Src\asm.s
+   Uses
+      At line 44 in file ..\Src\asm.s
+Comment: _load_initial_state used once
+_load_state 00000018
+
+Symbol: _load_state
+   Definitions
+      At line 28 in file ..\Src\asm.s
+   Uses
+      At line 29 in file ..\Src\asm.s
+Comment: _load_state used once
+_save_state 00000000
+
+Symbol: _save_state
+   Definitions
+      At line 12 in file ..\Src\asm.s
+   Uses
+      At line 13 in file ..\Src\asm.s
+Comment: _save_state used once
+4 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+handler 00000000
+
+Symbol: handler
+   Definitions
+      At line 6 in file ..\Src\asm.s
+   Uses
+      None
+Comment: handler unused
+mpsp 00000000
+
+Symbol: mpsp
+   Definitions
+      At line 3 in file ..\Src\asm.s
+   Uses
+      None
+Comment: mpsp unused
+os_curr_task 00000000
+
+Symbol: os_curr_task
+   Definitions
+      At line 4 in file ..\Src\asm.s
+   Uses
+      At line 19 in file ..\Src\asm.s
+      At line 47 in file ..\Src\asm.s
+
+os_next_task 00000000
+
+Symbol: os_next_task
+   Definitions
+      At line 5 in file ..\Src\asm.s
+   Uses
+      At line 32 in file ..\Src\asm.s
+Comment: os_next_task used once
+params 00000000
+
+Symbol: params
+   Definitions
+      At line 7 in file ..\Src\asm.s
+   Uses
+      None
+Comment: params unused
+thread_return 00000000
+
+Symbol: thread_return
+   Definitions
+      At line 9 in file ..\Src\asm.s
+   Uses
+      None
+Comment: thread_return unused
+xPSR 00000000
+
+Symbol: xPSR
+   Definitions
+      At line 8 in file ..\Src\asm.s
+   Uses
+      None
+Comment: xPSR unused
+7 symbols
+347 symbols in table

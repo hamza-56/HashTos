@@ -1,0 +1,99 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             MYCODE, CODE
+    2 00000000         
+    3 00000000                 EXPORT           _save_state
+    4 00000000                 IMPORT           mpsp
+    5 00000000                 IMPORT           os_curr_task
+    6 00000000                 IMPORT           os_next_task
+    7 00000000         
+    8 00000000         
+    9 00000000         _save_state
+   10 00000000 B672            cpsid            i
+   11 00000002         
+   12 00000002 F3EF 8109       MRS              r1, psp
+   13 00000006 E901 0FF0       STMDB            r1, {r4-r11}
+   14 0000000A F381 8809       MSR              psp,r1
+   15 0000000E 4807            LDR              r0, =mpsp
+   16 00000010 6001            STR              r1,[r0]
+   17 00000012         
+   18 00000012 4807            LDR              r0, =os_curr_task
+   19 00000014 6001            STR              r1,[r0]
+   20 00000016         
+   21 00000016 4807            LDR              r0, =os_next_task
+   22 00000018 6802            LDR              r2, [r0]
+   23 0000001A E912 0FF0       LDMDB            r2, {r4-r11}
+   24 0000001E F382 8809       MSR              psp, r2
+   25 00000022 B662            cpsie            i
+   26 00000024         
+   27 00000024 F06F 0102       ldr              r1, =0xfffffffd
+   28 00000028 4708            bx               r1
+   29 0000002A                 END
+              00 00 00000000 
+              00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
+ork --depend=rcc\asm.d -orcc\asm.o -IC:\Users\msann\Documents\RCC\MDK-ARM\RTE -
+IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\S
+TM32F1xx_DFP\2.2.0\Device\Include --predefine="__MICROLIB SETA 1" --predefine="
+__UVISION_VERSION SETA 521" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_M
+D SETA 1" --list=asm.lst ..\Src\asm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+MYCODE 00000000
+
+Symbol: MYCODE
+   Definitions
+      At line 1 in file ..\Src\asm.s
+   Uses
+      None
+Comment: MYCODE unused
+_save_state 00000000
+
+Symbol: _save_state
+   Definitions
+      At line 9 in file ..\Src\asm.s
+   Uses
+      At line 3 in file ..\Src\asm.s
+Comment: _save_state used once
+2 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+mpsp 00000000
+
+Symbol: mpsp
+   Definitions
+      At line 4 in file ..\Src\asm.s
+   Uses
+      At line 15 in file ..\Src\asm.s
+Comment: mpsp used once
+os_curr_task 00000000
+
+Symbol: os_curr_task
+   Definitions
+      At line 5 in file ..\Src\asm.s
+   Uses
+      At line 18 in file ..\Src\asm.s
+Comment: os_curr_task used once
+os_next_task 00000000
+
+Symbol: os_next_task
+   Definitions
+      At line 6 in file ..\Src\asm.s
+   Uses
+      At line 21 in file ..\Src\asm.s
+Comment: os_next_task used once
+3 symbols
+341 symbols in table
